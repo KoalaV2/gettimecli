@@ -113,11 +113,10 @@ def main():
     for x in result['data']['lessonInfo']:
         a.append(f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}")
     a.sort()
-    b = []
-    for x in a:
-        b.append(x.split(" -- ")[1])
+    
+    a = [i.split(' -- ')[1] for i in a]
 
-    for x in b:
-        print(x,'\n')
+    for x in a:
+        print(x)
 if __name__=="__main__":
     main()
