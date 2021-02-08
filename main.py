@@ -107,11 +107,10 @@ def main():
             }
     thirdurl='https://web.skola24.se/api/render/timetable'
     responsethird = requests.post(thirdurl,data=json.dumps(payload3),headers=headers3)
-
     result = json.loads(responsethird.text)
     a = []
     for x in result['data']['lessonInfo']:
-        a.append(f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}")
+        a.append(f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']} i sal {x['texts'][2]}")
     a.sort()
     
     a = [i.split(' -- ')[1] for i in a]
