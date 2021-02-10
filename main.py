@@ -109,8 +109,14 @@ def main():
     responsethird = requests.post(thirdurl,data=json.dumps(payload3),headers=headers3)
     result = json.loads(responsethird.text)
     a = []
+
     for x in result['data']['lessonInfo']:
-        a.append(f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']} i sal {x['texts'][2]}")
+        temp = f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}"
+        try:
+            temp += f" i sal {x['texts'][2]}"
+        except:
+            pass
+        a.append(temp)
     a.sort()
     
     a = [i.split(' -- ')[1] for i in a]
