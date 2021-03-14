@@ -60,7 +60,7 @@ def secondrequest():
 def currentweekday():
     import datetime as d
     weekday = d.datetime.today().isoweekday()
-    if weekday >= 1 and weekday <= 5:
+    if 1 <= weekday <= 5:
         return weekday
     return 0
 
