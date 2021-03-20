@@ -34,8 +34,8 @@ def getData(weekday):
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p"
     }
     idurl = 'https://web.skola24.se/api/encrypt/signature'
-    payload = {"signature": classid}
-    response = requests.post(idurl, data=json.dumps(payload), headers=headers)
+    signature = {"signature": classid}
+    response = requests.post(idurl, data=json.dumps(signature), headers=headers)
     response2 = str(response.text)
     response3 = response2.split('"signature": "')[1].split('"')[0]
 
@@ -56,13 +56,13 @@ def getData(weekday):
         "Sec-GPC": "1",
         "DNT": "1"
     }
-    payload2 = "null"
+    signature2 = "null"
     secondurl = 'https://web.skola24.se/api/get/timetable/render/key'
-    responsesecond = requests.post(secondurl, data=payload2, headers=headers2)
+    responsesecond = requests.post(secondurl, data=signature2, headers=headers2)
     responsesecond2 = (str(responsesecond.text))
     responsesecond3 = responsesecond2.split('"key": "')[1].split('"')[0]
     headers3 = headers2
-    payload3 = {
+    timetable = {
         "renderKey": responsesecond3,
         "host": "it-gymnasiet.skola24.se",
         "unitGuid": "ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2",
@@ -83,7 +83,7 @@ def getData(weekday):
         "customerKey": ""
     }
     thirdurl = 'https://web.skola24.se/api/render/timetable'
-    responsethird = requests.post(thirdurl, data=json.dumps(payload3), headers=headers3)
+    responsethird = requests.post(thirdurl, data=json.dumps(timetable), headers=headers3)
     return responsethird
 
 def main():
