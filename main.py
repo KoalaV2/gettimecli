@@ -6,8 +6,7 @@ import argparse
 import datetime
 
 def currentweekday():
-    import datetime as d
-    weekday = d.datetime.today().isoweekday()
+    weekday = datetime.datetime.today().isoweekday()
     if 1 <= weekday <= 5:
         return weekday
     return 0
@@ -94,7 +93,7 @@ def main():
 
         for x in a:
             print(x)
-    except TypeError as e:
+    except TypeError:
         print("No class found with such name")
 
 
