@@ -79,20 +79,23 @@ def main():
     responsethird = getData(currentweekday())
     result = json.loads(responsethird.text)
     a = []
+    
+    try: 
+        for x in result['data']['lessonInfo']:
+            temp = f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}"
+            try:
+                temp += f" i sal {x['texts'][2]}"
+            except:
+                pass
+            a.append(temp)
+        a.sort()
 
-    for x in result['data']['lessonInfo']:
-        temp = f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}"
-        try:
-            temp += f" i sal {x['texts'][2]}"
-        except:
-            pass
-        a.append(temp)
-    a.sort()
+        a = [i.split(' -- ')[1] for i in a]
 
-    a = [i.split(' -- ')[1] for i in a]
-
-    for x in a:
-        print(x)
+        for x in a:
+            print(x)
+    except TypeError as e:
+        print("No class found with such name")
 
 
 if __name__ == "__main__":
