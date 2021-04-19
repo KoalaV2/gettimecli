@@ -11,21 +11,29 @@ def currentweekday():
         return weekday
     return 0
 
+skolor = {
+    'NTI Södertörn':{
+        'Referer':"https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
+        'host':"it-gymnasiet.skola24.se",
+        'unitGuid':"ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2"
+    },
+    'Tumba':{
+        'Referer':"https://web.skola24.se/timetable/timetable-viewer/botkyrka.skola24.se/Tumba%20gymnasium/",
+        'host':"botkyrka.skola24.se",
+        'unitGuid':"YzQzNmI3ZDEtYTdmYi1mYTk3LTg4MmEtMGMzNGJmOGVmYmVl"
+    }
+}
 
-def getData(weekday):
+def getData(classid,weekday,skola):
     now = datetime.datetime.now()
     weeknumber = datetime.date(now.year, now.month, now.day).isocalendar()[1]
 
-    parser = argparse.ArgumentParser(description="Prints out the schedule for skola24.se NTI Södertörn")
-    parser.add_argument('-c', '--classid', type=str, help='Select the current class ID')
-    args = parser.parse_args()
-    classid = args.classid
     headers = {
         "X-Scope": "8a22163c-8662-4535-9050-bc5e1923df48",
         "X-Requested-With": "XMLHttpRequest",
         "Content-Type": "application/json",
         "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Referer": "https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
+        "Referer": skola['Referer'],
         "Accept-Encoding": "gzip,deflate",
         "Accept-Language": "en-US;q=0.5",
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p"
@@ -43,7 +51,7 @@ def getData(weekday):
         "Content-Type": "application/json",
         "X-Scope": "8a22163c-8662-4535-9050-bc5e1923df48",
         "X-Requested-With": "XMLHttpRequest",
-        "Referer": "https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
+        "Referer": skola['Referer'],
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p",
     }
     signature2 = "null"
@@ -54,8 +62,8 @@ def getData(weekday):
     headers3 = headers2
     timetable = {
         "renderKey": responsesecond3,
-        "host": "it-gymnasiet.skola24.se",
-        "unitGuid": "ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2",
+        "host": skola['host'],
+        "unitGuid": skola['unitGuid'],
         "scheduleDay": weekday,
         "blackAndWhite": "true",
         "width": 758,
@@ -75,8 +83,14 @@ def getData(weekday):
     return responsethird
 
 def main():
-    responsethird = getData(currentweekday())
-    result = json.loads(responsethird.text)
+    parser = argparse.ArgumentParser(description="Prints out the schedule for skola24.se NTI Södertörn")
+    parser.add_argument('-c', '--classid', type=str, help='Select the current class ID')
+    parser.add_argument('-s', '--schoolname', type=str, help="What school")
+    args = parser.parse_args()
+    classid = args.classid
+    school = args.schoolname
+
+    result = json.loads(getData(classid,currentweekday(),skolor[school]).text)
     a = []
     
     try: 
