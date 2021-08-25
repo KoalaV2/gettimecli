@@ -11,20 +11,7 @@ def currentweekday():
         return weekday
     return 0
 
-skolor = {
-    'NTI Södertörn':{
-        'Referer':"https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
-        'host':"it-gymnasiet.skola24.se",
-        'unitGuid':"ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2"
-    },
-    'Tumba':{
-        'Referer':"https://web.skola24.se/timetable/timetable-viewer/botkyrka.skola24.se/Tumba%20gymnasium/",
-        'host':"botkyrka.skola24.se",
-        'unitGuid':"YzQzNmI3ZDEtYTdmYi1mYTk3LTg4MmEtMGMzNGJmOGVmYmVl"
-    }
-}
-
-def getData(classid,weekday,skola):
+def getData(classid,weekday):
     now = datetime.datetime.now()
     weeknumber = datetime.date(now.year, now.month, now.day).isocalendar()[1]
 
@@ -33,7 +20,7 @@ def getData(classid,weekday,skola):
         "X-Requested-With": "XMLHttpRequest",
         "Content-Type": "application/json",
         "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Referer": skola['Referer'],
+        "Referer": "https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
         "Accept-Encoding": "gzip,deflate",
         "Accept-Language": "en-US;q=0.5",
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p"
@@ -51,7 +38,7 @@ def getData(classid,weekday,skola):
         "Content-Type": "application/json",
         "X-Scope": "8a22163c-8662-4535-9050-bc5e1923df48",
         "X-Requested-With": "XMLHttpRequest",
-        "Referer": skola['Referer'],
+        "Referer": "https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p",
     }
     signature2 = "null"
@@ -62,8 +49,8 @@ def getData(classid,weekday,skola):
     headers3 = headers2
     timetable = {
         "renderKey": responsesecond3,
-        "host": skola['host'],
-        "unitGuid": skola['unitGuid'],
+        'host':"it-gymnasiet.skola24.se",
+        'unitGuid':"ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2",
         "scheduleDay": weekday,
         "blackAndWhite": "true",
         "width": 758,
@@ -85,15 +72,13 @@ def getData(classid,weekday,skola):
 def main():
     parser = argparse.ArgumentParser(description="Prints out the schedule for skola24.se NTI Södertörn")
     parser.add_argument('-c', '--classid', type=str, help='Select the current class ID')
-    parser.add_argument('-s', '--schoolname', type=str, help="What school")
     args = parser.parse_args()
     classid = args.classid
-    school = args.schoolname
 
-    result = json.loads(getData(classid,currentweekday(),skolor[school]).text)
+    result = json.loads(getData(classid,currentweekday()).text)
     a = []
-    
-    try: 
+
+    try:
         for x in result['data']['lessonInfo']:
             temp = f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}"
             try:
