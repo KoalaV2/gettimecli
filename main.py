@@ -14,6 +14,7 @@ def getData(classid,weekday):
     now = datetime.datetime.now()
     weeknumber = datetime.date(now.year, now.month, now.day).isocalendar()[1]
 
+    # Get the signature for the second request
     headers = {
         "X-Scope": "8a22163c-8662-4535-9050-bc5e1923df48",
         "X-Requested-With": "XMLHttpRequest",
@@ -29,6 +30,7 @@ def getData(classid,weekday):
     response = requests.post(idurl, data=json.dumps(signature), headers=headers)
     response3 = response.text.split('"signature": "')[1].split('"')[0]
 
+    # Get the key for the third request
     headers2 = {
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "en-US,en;q=0.5",
@@ -43,6 +45,9 @@ def getData(classid,weekday):
     secondurl = 'https://web.skola24.se/api/get/timetable/render/key'
     responsesecond = requests.post(secondurl, data=signature2, headers=headers2)
     responsesecond3 = responsesecond.text.split('"key": "')[1].split('"')[0]
+
+
+    # Make the final request to get the timetable
     timetable = {
         "renderKey": responsesecond3,
         'host':"it-gymnasiet.skola24.se",
