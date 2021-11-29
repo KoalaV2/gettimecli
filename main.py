@@ -26,6 +26,8 @@ def getData(classid,weekday):
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p"
     }
     idurl = 'https://web.skola24.se/api/encrypt/signature'
+
+    # Pass through classid as the signature.
     signature = {"signature": classid}
     response = requests.post(idurl, data=json.dumps(signature), headers=headers)
     response3 = response.text.split('"signature": "')[1].split('"')[0]
@@ -42,8 +44,8 @@ def getData(classid,weekday):
         "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p",
     }
     signature2 = "null"
-    secondurl = 'https://web.skola24.se/api/get/timetable/render/key'
-    responsesecond = requests.post(secondurl, data=signature2, headers=headers2)
+    keyurl = 'https://web.skola24.se/api/get/timetable/render/key'
+    responsesecond = requests.post(keyurl, data=signature2, headers=headers2)
     responsesecond3 = responsesecond.text.split('"key": "')[1].split('"')[0]
 
 
@@ -79,6 +81,7 @@ def main():
     result = json.loads(getData(classid,currentweekday()).text)
     a = []
 
+    # Prettify output to get readable output.
     try:
         for x in result['data']['lessonInfo']:
             temp = f"{x['timeStart']} -- {x['texts'][0]}, börjar kl {x['timeStart']} och slutar kl {x['timeEnd']}"
