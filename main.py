@@ -63,7 +63,7 @@ def getData(classid,weekday):
         "showHeader": "false",
         "periodText": "",
         "week": weeknumber,
-        "year": 2021,
+        "year": 2022,
         "privateFreeTextMode": "false",
         "privateSelectionMode": "null",
         "customerKey": ""
