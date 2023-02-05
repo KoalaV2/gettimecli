@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 import requests
 import json
-import argparse
 import datetime
-
-def currentweekday():
-    weekday = datetime.datetime.today().isoweekday()
-    if 1 <= weekday <= 5:
-        return weekday
-    return 0
+import argparse
 
 def getData(classid,weekday):
     now = datetime.datetime.now()
@@ -19,66 +13,41 @@ def getData(classid,weekday):
         "X-Scope": "8a22163c-8662-4535-9050-bc5e1923df48",
         "X-Requested-With": "XMLHttpRequest",
         "Content-Type": "application/json",
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Referer": "https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
-        "Accept-Encoding": "gzip,deflate",
-        "Accept-Language": "en-US;q=0.5",
-        "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p"
     }
-    idurl = 'https://web.skola24.se/api/encrypt/signature'
 
     # Pass through classid as the signature.
     signature = {"signature": classid}
-    response = requests.post(idurl, data=json.dumps(signature), headers=headers)
-    response3 = response.text.split('"signature": "')[1].split('"')[0]
+    response = requests.post("https://web.skola24.se/api/encrypt/signature", data=json.dumps(signature), headers=headers)
 
     # Get the key for the third request
-    headers2 = {
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Accept-Language": "en-US,en;q=0.5",
-        "Accept-Encoding": "gzip, deflate",
-        "Content-Type": "application/json",
-        "X-Scope": "8a22163c-8662-4535-9050-bc5e1923df48",
-        "X-Requested-With": "XMLHttpRequest",
-        "Referer": "https://web.skola24.se/timetable/timetable-viewer/it-gymnasiet.skola24.se/IT-Gymnasiet%20S%C3%B6dert%C3%B6rn/",
-        "Cookie": "ASP.NET_SessionId=5hgt3njwnabrqso3cujrrj2p",
-    }
-    signature2 = "null"
-    keyurl = 'https://web.skola24.se/api/get/timetable/render/key'
-    responsesecond = requests.post(keyurl, data=signature2, headers=headers2)
-    responsesecond3 = responsesecond.text.split('"key": "')[1].split('"')[0]
-
+    responsesecond = requests.post("https://web.skola24.se/api/get/timetable/render/key", data="null", headers=headers)
 
     # Make the final request to get the timetable
     timetable = {
-        "renderKey": responsesecond3,
+        "renderKey": json.loads(responsesecond.text)['data']['key'],
         'host':"it-gymnasiet.skola24.se",
         'unitGuid':"ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2",
         "scheduleDay": weekday,
-        "blackAndWhite": "true",
         "width": 758,
         "height": 648,
         "selectionType": 4,
-        "selection": response3,
-        "showHeader": "false",
-        "periodText": "",
+        "selection": json.loads(response.text)['data']['signature'],
         "week": weeknumber,
-        "year": 2022,
-        "privateFreeTextMode": "false",
-        "privateSelectionMode": "null",
-        "customerKey": ""
+        "year": 2023,
     }
     thirdurl = 'https://web.skola24.se/api/render/timetable'
-    responsethird = requests.post(thirdurl, data=json.dumps(timetable), headers=headers2)
+    responsethird = requests.post(thirdurl, data=json.dumps(timetable), headers=headers)
     return responsethird
 
 def main():
+    weekday = datetime.datetime.today().isoweekday()
+    if not 1 <= weekday <= 5:
+        weekday =  0
+
     parser = argparse.ArgumentParser(description="Prints out the schedule for skola24.se NTI Södertörn")
     parser.add_argument('-c', '--classid', type=str, help='Select the current class ID')
-    args = parser.parse_args()
-    classid = args.classid
-
-    result = json.loads(getData(classid,currentweekday()).text)
+    classid = parser.parse_args().classid
+    result = json.loads(getData(classid,weekday).text)
     a = []
 
     # Prettify output to get readable output.
@@ -96,8 +65,8 @@ def main():
 
         for x in a:
             print(x)
-    except TypeError:
-        print("No class found with such name")
+    except KeyError:
+        print("No class found")
 
 
 if __name__ == "__main__":
