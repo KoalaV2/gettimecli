@@ -4,8 +4,6 @@ import json
 import datetime
 import argparse
 
-
-
 def getData(classid):
     s = requests.Session()
     s.headers.update({
@@ -22,21 +20,21 @@ def getData(classid):
 
     # Pass through classid as the signature.
     signature = {"signature": classid}
-    response = s.post("https://web.skola24.se/api/encrypt/signature", data=json.dumps(signature))
+    response = s.post("https://web.skola24.se/api/encrypt/signature", data=json.dumps(signature)).json()
 
     # Get the key for the third request
-    responsesecond = s.post("https://web.skola24.se/api/get/timetable/render/key", data="null")
+    responsesecond = s.post("https://web.skola24.se/api/get/timetable/render/key", data="null").json()
 
     # Make the final request to get the timetable
     timetable = {
-        "renderKey": json.loads(responsesecond.text)['data']['key'],
+        "renderKey": responsesecond['data']['key'],
         'host':"it-gymnasiet.skola24.se",
         'unitGuid':"ZTEyNTdlZjItZDc3OC1mZWJkLThiYmEtOGYyZDA4NGU1YjI2",
         "scheduleDay": weekday,
         "width": 1,
         "height": 1,
         "selectionType": 4,
-        "selection": json.loads(response.text)['data']['signature'],
+        "selection": response['data']['signature'],
         "week": weeknumber,
         "year": 2023,
     }
